@@ -1,0 +1,516 @@
+{
+  "info": {
+    "name": "National Bank Backend",
+    "description": "API collection for the National Bank Spring Boot backend.\n\n1. Run **Auth → Login** first to store the JWT token and user ID.\n2. Protected requests use Bearer auth automatically.\n3. Adjust `baseUrl`, `userId`, and `budgetId` in collection variables as needed.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": "2"
+    },
+    {
+      "key": "budgetId",
+      "value": "1"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "register"]
+            },
+            "description": "Register a new user account."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.token) {",
+                  "        pm.collectionVariables.set('token', json.token);",
+                  "    }",
+                  "    if (json.userId) {",
+                  "        pm.collectionVariables.set('userId', String(json.userId));",
+                  "    }",
+                  "    pm.test('Login successful', function () {",
+                  "        pm.expect(json.token).to.be.a('string').and.not.empty;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@bank.com\",\n  \"password\": \"user123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "login"]
+            },
+            "description": "Login with seed user credentials. Saves JWT token and userId to collection variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.token) {",
+                  "        pm.collectionVariables.set('token', json.token);",
+                  "    }",
+                  "    if (json.userId) {",
+                  "        pm.collectionVariables.set('userId', String(json.userId));",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@bank.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "login"]
+            },
+            "description": "Login as admin user."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Deposit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"amount\": 100.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction/deposit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction", "deposit"]
+            },
+            "description": "Deposit funds into a user account."
+          },
+          "response": []
+        },
+        {
+          "name": "Withdraw",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"amount\": 50.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction/withdraw",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction", "withdraw"]
+            },
+            "description": "Withdraw funds from a user account."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction/balance/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction", "balance", "{{userId}}"]
+            },
+            "description": "Get the current balance for a user."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transaction History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction/history/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction", "history", "{{userId}}"]
+            },
+            "description": "Get transaction history for a user."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Expenses",
+      "item": [
+        {
+          "name": "Get Expenses by Date",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{userId}}/expense?date=2026-07-23",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{userId}}", "expense"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-07-23",
+                  "description": "ISO date (YYYY-MM-DD)"
+                }
+              ]
+            },
+            "description": "Get expenses for a specific date."
+          },
+          "response": []
+        },
+        {
+          "name": "Save Expenses",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"expenseDate\": \"2026-07-23\",\n    \"category\": \"Groceries\",\n    \"amount\": 75.50\n  },\n  {\n    \"expenseDate\": \"2026-07-23\",\n    \"category\": \"Utilities\",\n    \"amount\": 120.00\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{userId}}/expense",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{userId}}", "expense"]
+            },
+            "description": "Create or update expenses for a user."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Expense Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{userId}}/expense/dashboard?month=7",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{userId}}", "expense", "dashboard"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "7",
+                  "description": "Month number (1-12)"
+                }
+              ]
+            },
+            "description": "Get monthly expense dashboard summary."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Expense Trends",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{userId}}/expense/trends",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{userId}}", "expense", "trends"]
+            },
+            "description": "Get expense trend data for a user."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Debts",
+      "item": [
+        {
+          "name": "Save Debt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Credit Card\",\n  \"amount\": 5000.00,\n  \"interestRate\": 18.50,\n  \"minPayment\": 150.00,\n  \"additionalPayment\": 50.00,\n  \"userId\": {{userId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/debts/save",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "debts", "save"]
+            },
+            "description": "Create or update a debt record."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Debts by User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/debts/user/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "debts", "user", "{{userId}}"]
+            },
+            "description": "Get all debts for a user."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Budgets",
+      "item": [
+        {
+          "name": "Create Budget",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.id) {",
+                  "        pm.collectionVariables.set('budgetId', String(json.id));",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"month\": 7,\n  \"year\": 2026\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/budget",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budget"]
+            },
+            "description": "Create a budget for a month. Saves budgetId to collection variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Income Sources",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"sourceName\": \"Salary\",\n    \"amount\": 5000.00\n  },\n  {\n    \"sourceName\": \"Freelance\",\n    \"amount\": 800.00\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/budget/{{budgetId}}/income",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budget", "{{budgetId}}", "income"]
+            },
+            "description": "Add income sources to a budget."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Fixed Expenses",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"category\": \"Rent\",\n    \"amount\": 1200.00\n  },\n  {\n    \"category\": \"Insurance\",\n    \"amount\": 200.00\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/budget/{{budgetId}}/fixedExpense",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budget", "{{budgetId}}", "fixedExpense"]
+            },
+            "description": "Add fixed expense categories to a budget."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Variable Expenses",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"category\": \"Groceries\",\n    \"amount\": 400.00\n  },\n  {\n    \"category\": \"Entertainment\",\n    \"amount\": 150.00\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/budget/{{budgetId}}/variableExpense",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budget", "{{budgetId}}", "variableExpense"]
+            },
+            "description": "Add variable expense categories to a budget."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Saving Goals",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"name\": \"Emergency Fund\",\n    \"amount\": 500.00\n  },\n  {\n    \"name\": \"Vacation\",\n    \"amount\": 200.00\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/budget/{{budgetId}}/savingGoals",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budget", "{{budgetId}}", "savingGoals"]
+            },
+            "description": "Add saving goals to a budget."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Budget for Month",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/budget/{{userId}}/7/2026",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budget", "{{userId}}", "7", "2026"]
+            },
+            "description": "Get budget details for a specific user, month, and year."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
