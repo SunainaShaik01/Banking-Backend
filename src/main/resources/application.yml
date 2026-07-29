@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: banking-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/banking_db
+    username: banking_user
+    password: banking_pass
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+
+app:
+  jwt:
+    secret: 4f8c2e9b7a1d6c0e5f3b8a2d7c1e9f4b6a8d2c7e1f5b9a3d8c2e6f0b4a7d1c5e9
+    expiration-ms: 86400000
+  cors:
+    allowed-origins: http://localhost:3000
+
+logging:
+  level:
+    org.springframework.security: INFO
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
